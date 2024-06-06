@@ -106,7 +106,7 @@ theme: hexo-theme-cola
 # Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: 'git'
-  repo: 'https://github.com/xiao-lin-unit/xiaolin.github.io.git'
+  repo: 'https://github.com/xiao-lin-unit/xiao-lin-unit.github.io.git'
 #  repo: 'https://gitee.com/xiao-lin/xiao-lin.git'
   branch: 'main'
 
