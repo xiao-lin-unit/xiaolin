@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="<%- url_for('css/partial/archive.css?time=' + new Date().getMilliseconds()) %>" />
+
+<%
+    const posts = site.posts
+    const archives = {}
+    posts.each(function(post) {
+        const _date = date(post.date, 'YYYY-MM-DD').split('-')
+        const year = _date[0]
+        const month = _date[1]
+        if (!archives[year]) {
+            archives[year] = {}
+        }
+        const months = archives[year]
+        if (!months[month]) {
+            months[month] = []
+        }
+        months[month].push({ title: post.title, path: post.path, date: _date[2] })
+    });
+    // 按照日期从到到大排序
+    for(let key in archives) {
+        let months = archives[key];
+        for (let mKey in months) {
+          let posts = months[mKey];
+          // 每月的文章按日排序
+          posts.sort((p1, p2) => p1.date - p2.date)
+        }
+        // 每年的文章按月排序
+        archives[key]["months"] = Object.keys(months).sort();
+    }
+    // 将年份排序
+    let years = Object.keys(archives).sort();
+
+
+%>
+<%if (page.path === 'archives/index.html') { %>
+    <div class="archive">
+        <h1 class="archive-title">我の博客归档记录</h1>
+        <ul class="archive-list">
+            <% years.forEach(year => { %>
+                <li class="archive-list__year">
+                    <h2><%- year %>年</h2>
+                    <ul>
+                        <% archives[year]["months"].forEach(month => { %>
+                            <li class="archive-list__month">
+                                <h3>第<%- month -%>の月</h3>
+                                <ul>
+                                    <% archives[year][month].forEach(post => { %>
+                                        <li class="archive-list__post">
+                                            <div>
+                                                <a href="/<%- post.path %>"><%- post.title %></a>
+                                                <span><%- month %>月<%- post.date %>日</span>
+                                            </div>
+                                        </li>
+                                    <% }) %>
+                                </ul>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+<% } else { %>
+    <%- partial('_partial/index.ejs') %> 
+<% } %>

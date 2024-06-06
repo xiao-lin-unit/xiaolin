@@ -1,0 +1,243 @@
+<link rel="stylesheet" href="<%- url_for('css/partial/index.css?time=' + new Date().getMilliseconds()) %>"/>
+
+<%
+  const time = new Date().getMilliseconds();
+  function cover(post) {
+      const url = post.cover;
+      let cover = post.cover || theme.cover.default;
+      if (url === null || url === undefined || url === '') {
+          cover = theme.cover.default;
+      } else if (!isNaN(url)) {
+          const num = parseInt(url);
+          cover = num <= 0 || num >= theme.cover.list.length ? theme.cover.default : theme.cover.list[num];
+      } else if (url === 'default') {
+        cover = theme.cover.default
+      }
+      post.cover = cover + "?time=" + time;
+  }
+  const leftPosts = [], rightPosts = []
+  page.per_page = 2
+  const posts = page.posts;
+  // console.log("before: ", posts);
+  posts.data.sort((a, b) => {
+    // 先将两个文章的分类数组排序
+    let aCate = a.categories.data.map(i => i.name).sort((c1, c2) => c1 > c2 ? 1 : -1);
+    let bCate = b.categories.data.map(i => i.name).sort((c1, c2) => c1 > c2 ? 1 : -1);
+    // 先根据分类排序
+    if (aCate && bCate) {
+      // 判断分类数组长度是否相同
+      if (aCate.length !== bCate.length) {
+        // 不同直接返回结果
+        return aCate.length - bCate.length
+      }
+      // 相同, 获取两个数组的长度
+      const length = aCate.length;
+      // 根据长度遍历两个数组
+      for (let i = 0; i < length; i++) {
+        // 判断当前元素是否相同
+        if (aCate[i] !== bCate[i]) {
+          let aCh = aCate[i];
+          let bCh = bCate[i];
+          return aCh > bCh ? 1 : -1;
+        }
+      }
+    } else if (a.categories) {
+      return 1
+    } else {
+      return -1
+    }
+    // 如果分类无法排序, 则根据其他内容排序
+    if(a.top && b.top) { // 两篇文章top都有定义
+      if(a.top == b.top) return a.date - b.date; // 若top值一样则按照文章日期降序排
+      else return a.top - b.top; // 否则按照top值降序排
+    }
+    else if(a.top && !b.top) { // 以下是只有一篇文章top有定义，那么将有top的排在前面（这里用异或操作居然不行233）
+      return -1;
+    }
+    else if(!a.top && b.top) {
+      return 1;
+    }
+    else return a.date - b.date; // 都没定义按照文章日期降序排
+  });
+  posts.each(function (post, i) {
+      cover(post)
+      if (i % 2 === 0) {
+          leftPosts.push(post)
+      } else {
+          rightPosts.push(post)
+      }
+  })
+%>
+
+<div class="index">
+    <div class="index-left">
+        <% leftPosts.forEach(function(post){ %>
+            <div class="index-article">
+                <!-- <img class="index-article--cover" src="<%- url_for((post.cover || 'imgs/default-cover.webp') + '?time=' + time) %>" alt=""> -->
+                <div class="index-article--box">
+                    <img class="index-article--cover" data-cover="<%- post.cover %>" src=""
+                         alt="<%- post.title %>"/>
+                </div>
+                <div class="index-article--content">
+                    <a href="<%- url_for(post.path + '?time=' + time) %>"><%- post.title %> </a>
+                    <div>
+                        <% if (post.categories.length > 0) { %>
+                            <p>
+                                <%- list_categories(post.categories, {
+                                    show_count: false,
+                                    style: null,
+                                    class: 'post-category',
+                                    transform(str) {
+                                        return titlecase(str);
+                                    }
+                                }) %>
+                            </p>
+                        <% } %>
+                        <% if (post.tags.length > 0 ) { %>
+                            <p>
+                                <%- list_tags(post.tags, {
+                                    class: '',
+                                    order: -1,
+                                    style: null,
+                                    show_count: false,
+                                    separator: '<span> ◆ </span>'
+                                }) %>
+                            </p>
+                        <% } %>
+                    </div>
+                    <div class="bg"></div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+    <div class="index-center">
+        <% rightPosts.forEach(function(post){ %>
+            <div class="index-article">
+                <!-- <img class="index-article--cover" data-cover="<%- post.cover %>" src="<%- url_for((post.cover || 'imgs/default-cover.webp') + '?time=' + time) %>" alt=""> -->
+                <div class="index-article--box">
+                    <img class="index-article--cover" data-cover="<%- post.cover %>" src=""
+                         alt="<%- post.title %>"/>
+                </div>
+                <div class="index-article--content">
+                    <a href="<%- url_for(post.path + '?time=' + time) %>"><%- post.title %> </a>
+                    <div>
+                        <% if (post.categories.length > 0) { %>
+                            <p>
+                                <%- list_categories(post.categories, {
+                                    show_count: false,
+                                    style: null,
+                                    transform(str) {
+                                        return titlecase(str)
+                                    }
+                                }) %>
+                            </p>
+                        <% } %>
+                        <% if (post.tags.length > 0 ) { %>
+                            <p>
+                                <%- list_tags(post.tags, {
+                                    class: '',
+                                    order: -1,
+                                    style: null,
+                                    show_count: false,
+                                    separator: '<span> ◆ </span>'
+                                }) %>
+                            </p>
+                        <% } %>
+                    </div>
+                    <div class="bg"></div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+    <div class="index-right">
+        <div class="index-right-wrapper">
+            <%- list_categories(site.categories, {
+                show_count: false,
+                transform(str) {
+                    return titlecase(str)
+                }
+            }) %>
+            <%- list_tags(site.tags, {class: {ul: 'tags'}, order: -1, show_count: false}) %>
+            <%- list_archives({
+                order: -1, format: 'YYYY年MM月', transform(str) {
+                    return str
+                }
+            }) %>
+        </div>
+    </div>
+</div>
+<% if (site.posts.length > 10) { %>
+    <div class="page">
+        <%- paginator({
+            total: page.total,
+            prev_text: '<',
+            next_text: '>'
+        }) %>
+    </div>
+<% } %>
+
+<script>
+  var allImgBoxs = document.querySelectorAll('.index-article--box');
+  var windowHeight = window.innerHeight;
+  var boxs = Array.from(allImgBoxs);
+  var timer = null;
+  boxs.forEach((box, idx) => {
+    if (!window.loadImageSet || !window.loadImageSet.includes(idx)) {
+      box.classList.add('img-loading');
+    } else {
+      const imgDom = box.querySelector('img');
+      imgDom.src = imgDom.dataset.cover;
+    }
+  });
+
+  function scrollFn() {
+    if (timer) {
+      return;
+    }
+    timer = setTimeout(() => {
+      loadImage();
+      timer = null;
+    }, 100)
+  }
+
+  setTimeout(() => {
+    loadImage();
+  }, 100);
+  if (!window.loadedImage) {
+    document.addEventListener('scroll', scrollFn);
+  }
+
+  function loadImage() {
+    // const doc = document.documentElement;
+    // const scrollTop = doc.scrollTop;
+    if (boxs.every(box => box.loadedImage)) {
+      document.removeEventListener('scroll', scrollFn);
+      window.loadedImage = 1;
+      return;
+    }
+    boxs.forEach((box, idx) => {
+      if (box.loadedImage) {
+        return;
+      }
+      if (box.getBoundingClientRect().top < windowHeight) {
+        const imgDom = box.querySelector('img');
+        imgDom.src = imgDom.dataset.cover;
+        // 图片成功加载
+        imgDom.onload = () => {
+          box.classList.remove('img-loading');
+          box.loadedImage = true;
+          if (!window.loadImageSet) {
+            window.loadImageSet = [];
+          }
+          window.loadImageSet.push(idx);
+        }
+        // 图片加载失败
+        imgDom.onerror = () => {
+          box.classList.remove('img-loading');
+          box.classList.add('img-error');
+          imgDom.src = '/imgs/404.png';
+        }
+      }
+    });
+  }
+</script>

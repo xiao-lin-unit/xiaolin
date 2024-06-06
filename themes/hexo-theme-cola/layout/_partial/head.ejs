@@ -1,0 +1,25 @@
+<head>
+  <meta charset="utf-8">
+  <%
+    const baseTitle = config.title
+    const pageTitle = page.title || '小站首页'
+    const title = theme.title// + pageTitle
+    const time = new Date().getMilliseconds();
+  %>
+  <title><% if (title){ %><%= title %> | <% } %><%= config.title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="<%- url_for('imgs/shortcut-icon.ico?time=' + time) %>" type="image/x-icon">
+  <link rel="stylesheet" href="<%- url_for('css/public.css?time=' + time) %>" />
+  <link rel="stylesheet" href="<%- url_for('css/layout.css?time=' + time) %>" />
+  <link rel="stylesheet" href="<%- url_for('css/iconfont.css?time=' + time) %>" />
+  <link rel="stylesheet" href="<%- url_for('css/APlayer.min.css?time=' + time) %>" />
+  <script src="<%- url_for('js/APlayer.min.js?time=' + time) %>"></script>
+  <script src="<%- url_for('js/jquery.min.js?time=' + time) %>"></script>
+  <script src="<%- url_for('js/jquery.pjax.min.js?time=' + time) %>"></script>
+
+  <script src="<%- url_for('js/Valine.min.js?time=' + time) %>"></script>
+<!--  <script src='https://unpkg.com/valine/dist/Valine.min.js'></script>-->
+  <script>
+    document.title = `<%- title %>`
+  </script>
+</head>

@@ -1,0 +1,5 @@
+public
+.deploy_git
+.idea
+db.json
+*.git
