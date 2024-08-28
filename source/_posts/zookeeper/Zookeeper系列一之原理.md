@@ -28,5 +28,25 @@ cover: 0
 
  `Lamport`老爷子提出了实现分布式一致性的解决方案, 并使用`paxos`小岛的方式进行了具象化描述, 当我去阅读网上的文章的解析文章的时候, 我疯了, 好似不同的人理解出了不一样的版本. 我只得去寻找原文: <a href="The Part-Time Parliament en.pdf">The Part-Time Parliament en.pdf</a>
 
-相信对各位大佬来说简直小菜, 我个人英语水平不行, 我看中文译文版: <a href="The Part-Time Parliament CN.pdf">The Part-Time Parliament en.pdf</a>
+相信对各位大佬来说简直小菜, 我个人英语水平不行, 我看中文译文版: <a href="The Part-Time Parliament CN.pdf">The Part-Time Parliament CN.pdf</a>
+
+##### 阶段一: 单一法令圣会(The Single-Decree Synod)
+
+阶段一中有以下要点:
+
+1. 通过一系列有编号的选票来表决, 一张选票是对单一的一个法令的表决
+2. 在一轮表决中, 牧师只能选择投票或不投票
+3. 和表决相关的是一群牧师的集合, 称法定人数(参与人数)
+4. 一轮表决是否成功只取决于法定人数的牧师给该法令投票(投票人数) 
+
+一轮表决包含四个部分(一轮表决以`B`表示): 
+
+1. B~dec~ : 被表决的一条法令
+2. B~qrm~ : 非空的牧师集合, 表决的法定人数集, 一般指多数派
+3. B~vot~ : 投票给该法令的牧师集合
+4. B~bal~ : 选票序号
+
+一轮表决成功条件: 
+
+​	1. 当且仅当B~qrm~ ⊆ B~vot~ 
 
