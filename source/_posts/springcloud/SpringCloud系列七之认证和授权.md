@@ -435,7 +435,7 @@ logging:
 
    - 第一种是网上大多的解决方案: 在走到认证流程过滤器前添加一个过滤器, 在这个过滤器中添加验证信息到上下文中, 还有的有会再获取`AuthenticationManager`然后再手动调用认证方法
 
-   - 第二种是修改`session`的保存策略: 我个人比较懒, 所以想直接替换``spring`中验证信息的获取和保存方式. `spring`中无论是`mvc`还是`security`都是将请求基于`ThreadLocal`的, 所以此处的`session`策略不要修改, 依然使用`ThreadLocalSecurityContextHolderStrategy`, 我们要修改的是其存储库`SecurityContextRepository`
+   - 第二种是修改`session`的保存策略: 我个人比较懒, 所以想直接替换`spring`中验证信息的获取和保存方式. `spring`中无论是`mvc`还是`security`都是将请求基于`ThreadLocal`的, 所以此处的`session`策略不要修改, 依然使用`ThreadLocalSecurityContextHolderStrategy`, 我们要修改的是其存储库`SecurityContextRepository`
 
      `SecurityContextHolderFilter`: 获取验证信息的过滤器
 
