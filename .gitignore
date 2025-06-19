@@ -3,3 +3,5 @@ public
 .idea
 db.json
 *.git
+package-lock.json
+node_modules
