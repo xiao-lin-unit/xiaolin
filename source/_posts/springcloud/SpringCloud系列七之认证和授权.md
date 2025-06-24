@@ -287,11 +287,11 @@ logging:
 
    ```java
    public class UserLogoutSuccessHandler implements LogoutSuccessHandler {
-       public UserLogoutSuccessHandler(AuthenticationSaveHandler authenticationSaveHandler) {
+       /*public UserLogoutSuccessHandler(AuthenticationSaveHandler authenticationSaveHandler) {
            this.authenticationSaveHandler = authenticationSaveHandler;
        }
    
-       private AuthenticationSaveHandler authenticationSaveHandler;
+       private AuthenticationSaveHandler authenticationSaveHandler;*/
    
        @Override
        public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -376,11 +376,11 @@ logging:
    ```java
    public class LoginFailureHandler implements AuthenticationFailureHandler {
    
-       public LoginFailureHandler(AuthenticationSaveHandler authenticationSaveHandler) {
+       /*public LoginFailureHandler(AuthenticationSaveHandler authenticationSaveHandler) {
            this.authenticationSaveHandler = authenticationSaveHandler;
        }
    
-       private AuthenticationSaveHandler authenticationSaveHandler;
+       private AuthenticationSaveHandler authenticationSaveHandler;*/
        @Override
        public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
            Map<String, Object> result = new HashMap<String, Object>();
@@ -396,16 +396,16 @@ logging:
    ```java
    public class LoginSuccessHandler implements AuthenticationSuccessHandler {
    
-       public LoginSuccessHandler(AuthenticationSaveHandler authenticationSaveHandler) {
+       /*public LoginSuccessHandler(AuthenticationSaveHandler authenticationSaveHandler) {
            this.authenticationSaveHandler = authenticationSaveHandler;
        }
    
-       private AuthenticationSaveHandler authenticationSaveHandler;
+       private AuthenticationSaveHandler authenticationSaveHandler;*/
    
        @Override
        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-           String token = StringUtils.isBlank(request.getHeader("TOKEN")) ? UUID.randomUUID().toString() : request.getHeader("TOKEN");
-           authenticationSaveHandler.add(token, authentication);
+           /*String token = StringUtils.isBlank(request.getHeader("TOKEN")) ? UUID.randomUUID().toString() : request.getHeader("TOKEN");
+           authenticationSaveHandler.add(token, authentication);*/
            Map<String, Object> result = new HashMap<>();
            result.put("msg", "登录成功");
            result.put("status", 200);
