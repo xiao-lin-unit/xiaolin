@@ -446,6 +446,41 @@ public @interface ResourceApplication {
 
 应用`@Import`的导入原理
 
+### 处理服务间调用影响
+
+在添加认证之后会出现一个问题，前面做的`OpenFeign`服务之间的调用会异常，这是由于服务之间的调用也添加了验证但是服务之间调用没有添加对应的验证信息。
+
+处理上述问题可以在`OpenFeign`服务调用时将原请求的所有请求头信息添加到服务间调用请求中
+
+实现方法时添加一个`OpenFeign`的请求拦截器，获取到原请求的请求头信息，并将其添加到服务调用请求头中
+
+```java
+@Configuration
+@EnableFeignClients(basePackages = "com.xiaolin.*.clients")
+public class OpenFeignConfig {
+
+    @Bean
+    public RequestInterceptor requestInterceptor() {
+        return template -> {
+                ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                if (Objects.nonNull(requestAttributes)) {
+                    HttpServletRequest request = requestAttributes.getRequest();
+                    Enumeration<String> headerNames = request.getHeaderNames();
+                    if (Objects.nonNull(headerNames)) {
+                        while (headerNames.hasMoreElements()) {
+                            String headerName = headerNames.nextElement();
+                            String headerValue = request.getHeader(headerName);
+                            template.header(headerName, headerValue);
+                        }
+                    }
+                }
+        };
+    }
+
+
+}
+```
+
 
 
 
