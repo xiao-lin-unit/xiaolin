@@ -33,7 +33,7 @@ menu:
   - [关于自己, '/about', 'icon-guanyuwomen']
   - [标签, '/tags', 'xiao-lin-blog-tags-rectangle']
   - [分类, '/categories', 'xiao-lin-blog-categories']
-#  - [我的工具, '/tools', 'icon-gongju']
+  - [我的工具, '/tools', 'icon-gongju']
 
 # 友情连接：头像、名字、链接
 links:
@@ -59,21 +59,26 @@ cover:
 
 # 个人介绍
 likes:
-  - 姓名：小琳
+  - '姓名：<a href="/about/简历.pdf" style="color: #489bf0">小琳</a>'
   - 出生年月：96年3月
   - 性别：♂
   - QQ：2415171965
-  - Email：xiao_lin_unit@163.com
+  - 邮箱：xiao_lin_unit@163.com
   - 家乡：山东潍坊
-  - 现居住地：江苏南京
+  - 现居住地：山东济南
   - 职业：JAVA开发
-  - 爱好：音乐，动漫，电影，吃
+  - 证书：软件设计师
+  - 学历：本科
+  - 爱好：音乐，动漫，电影，篮球，吃
   - 个人描述：空闲的时候喜欢心血来潮的搞点小东西，学点感兴趣的东西。休息无聊也会出去逛逛撸个串，像是一个悲观主义的乐天派，思想上思绪太多，行为上乐得自在。
 
 # 工具配置：封面，标题，介绍，链接
 tools:
   # - ['https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/30e94204580a4dbd83a64d4f91a9a6e5~tplv-k3u1fbpfcp-no-mark:240:240:240:160.awebp?', 'PNG图片压缩器', '这是一款无损压缩PNG图片的在线工具，可以童工上传或拖动来批量压缩图片并打包下载', 'http://1.14.43.39:5000/']
-  - ['https://coke-cola.gitee.io/resume-page/assets/dark-f439b888.jpeg', '在线简历生成器', '一个免费的在线简历生成工具', 'https://coke-cola.gitee.io/resume-page/#/']
+  - ['/imgs/tools/learngitbranching-logo.webp', 'GIT学习', '一个直观的GIT学习网站', 'https://learngitbranching.js.org/']
+  - ['/imgs/tools/wormhole.webp', '文件分享', '一个免费的在线文件分享网站', 'https://wormhole.app/']
+  - ['/imgs/tools/济南就业参考.png', '就业参考圈', '一个就业参考圈子，看看自己适不适合', 'https://gshmd.vip/']
+  - ['/imgs/tools/github-akams.svg', 'github加速代理', '一个加速从GitHub下载文件的代理网站', 'https://github.akams.cn/']
 
 # 右侧栏网站信息
 copyright: 我好像没有网络备案
