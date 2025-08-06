@@ -18,8 +18,10 @@
   const leftPosts = [], rightPosts = []
   page.per_page = 2
   const posts = page.posts;
-  // console.log("before: ", posts);
+  debugger;
+  console.log("site: ", site);
   posts.data.sort((a, b) => {
+    debugger;
     // 先将两个文章的分类数组排序
     let aCate = a.categories.data.map(i => i.name).sort((c1, c2) => c1 > c2 ? 1 : -1);
     let bCate = b.categories.data.map(i => i.name).sort((c1, c2) => c1 > c2 ? 1 : -1);
