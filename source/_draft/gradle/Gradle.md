@@ -197,3 +197,158 @@
      >
      > 
 
+四. 依赖管理
+
+软件项目通常依赖于其他库才能正常工作，`gradle`在`build.gradle`文件通过`dependencies`声明项目引入的依赖。它允许指定各种类型的依赖，如外部库，本地`JAR`或多项目构建中的其他项目
+
+1. 依赖类型
+
+   - 模块依赖：指代仓库中的一个模块
+
+     > ```groovy
+     > dependencies {
+     >     implementation 'org.codehaus.groovy:groovy:3.0.5'
+     >     implementation 'org.codehaus.groovy:groovy-json:3.0.5'
+     >     implementation 'org.codehaus.groovy:groovy-nio:3.0.5'
+     > }
+     > ```
+
+   - 项目依赖：允许生命贵同一构建中的其他项目的依赖
+
+     > ```groovy
+     > dependencies {
+     >     implementation project(':utils')
+     >     implementation project(':api')
+     > }
+     > ```
+
+   - 文件依赖：托管在共享驱动器上或者与项目源代码一起检入版本控制系统大的文件
+
+     > ```groovy
+     > dependencies {
+     >     runtimeOnly files('libs/a.jar', 'libs/b.jar')
+     >     runtimeOnly fileTree('libs') { include '*.jar' }
+     > }
+     > ```
+
+2. 依赖配置
+
+   - `api`:编译和运行时都需要，并包含在发布的`API`中
+
+   - `implementation`:编译和运行时都需要
+
+   - `compileOnly`:仅编译时需要
+
+   - `compileOnlyApi`:仅编译时需要，但包含在发布的`API`中
+
+   - `runtimeOnly`:仅运行时需要，不包含在编译类滤镜中
+
+   - `testImplementation`:编译和运行测试选哟
+
+   - `testCompileOnly`:仅测试编译需要
+
+   - `testRuntimeOnly`:仅运行测试需要
+
+   - `customConfig`:自定义配置
+
+     > ```groovy
+     > configurations {
+     >     customConfig
+     > }
+     > 
+     > dependencies {
+     >     customConfig("org.example:example-lib:1.0")
+     > }
+     > ```
+
+   - 其它类型配置: 不用于声明依赖项
+
+3. 声明仓库
+
+   通过`build.gradle`中的`repositories`块来为依赖台添加任意数量的仓库
+
+   ```groovy
+   repositories {
+       mavenCentral()  // 公共仓库
+       maven {         
+           url = uri("https://company/com/maven2")	// 自定义仓库
+       }
+       maven {
+           url = 'https://your.secure.repo/url'	// 自定义仓库
+           credentials {							// 验证方式
+               username = 'your-username'
+               password = 'your-password'
+           }
+       }
+       mavenLocal()    // 本地仓库
+       flatDir {       
+           dirs "libs" // 文件位置
+       }
+   }
+   ```
+
+4. 使用平台
+
+   > ```groovy
+   > // platform/build.gradle
+   > plugins {
+   >     id("java-platform")
+   > }
+   > 
+   > dependencies {
+   >     constraints { // 用户解决依赖冲突时选择依赖项的特定版本
+   >         api("org.apache.commons:commons-lang3:3.12.0")
+   >         api("com.google.guava:guava:30.1.1-jre")
+   >         api("org.slf4j:slf4j-api:1.7.30")
+   >     }
+   > }
+   > 
+   > // app/build.gradle
+   > plugins {
+   >     id("java-library")
+   > }
+   > 
+   > dependencies {
+   >     implementation(platform(":platform"))
+   >     implementation platform('org.springframework.boot:spring-boot-dependencies:1.5.8.RELEASE')
+   > }
+   > ```
+   >
+   > 
+
+5. 集中依赖管理
+
+   > ```toml
+   > // gradle/libs.versions.toml
+   > 
+   > [versions]
+   > groovy = "3.0.5"
+   > checkstyle = "8.37"
+   > 
+   > [libraries]
+   > groovy-core = { module = "org.codehaus.groovy:groovy", version.ref = "groovy" }
+   > groovy-json = { module = "org.codehaus.groovy:groovy-json", version.ref = "groovy" }
+   > groovy-nio = { module = "org.codehaus.groovy:groovy-nio", version.ref = "groovy" }
+   > commons-lang3 = { group = "org.apache.commons", name = "commons-lang3", version = { strictly = "[3.8, 4.0[", prefer="3.9" } }
+   > 
+   > [bundles]
+   > groovy = ["groovy-core", "groovy-json", "groovy-nio"]
+   > 
+   > [plugins]
+   > versions = { id = "com.github.ben-manes.versions", version = "0.45.0" }
+   > ```
+   >
+   > ```groovy
+   > // build.gradle
+   > plugins {
+   >     id 'java-library'
+   >     alias(libs.plugins.versions)
+   > }
+   > 
+   > dependencies {
+   >     api libs.groovy.core
+   >     api libs.bundles.groovy
+   > }
+   > ```
+   >
+   > 
