@@ -221,7 +221,7 @@ RUN ["{path}/{name}.sh", "param1", "param2"...] # 基于可执行文件
 RUN ["/var/lib/rancher/k3s/etc/containerd/k3s-agent-uninstall.sh"]
 ```
 
-##### `ADD`
+##### `ADD`或者`COPY`
 
 将主机中的指定文件复制到容器中的目标位置
 
@@ -230,8 +230,11 @@ ADD {host_file} {container_dir}
 ADD ["{host_file}", "{container_dir}"]
 # 例如
 ADD /etc/hosts /etc
-
 ```
+
+> ADD和COPY的使用方式基本一致，大多数情况下可以替换
+>
+> 在添加压缩包时不能替换，ADD会将压缩包解压，但是COPY只是原样复制
 
 ##### `WORKDIR`
 
@@ -286,6 +289,9 @@ EXPOSE port
    # 不会被容器运行时指定的命令覆盖
    # docker run xxx /bin/bash -> /bin/bash不会覆盖掉ENTRYPOINT执行的内容 
    ```
+   
+
+> CMD的扩展性比ENTRYPOINT更高
 
 ##### 扩展指令
 
@@ -569,10 +575,11 @@ mkdir -r /opt/docker/nginx
 cd /opt/docker/nginx
 touch docker-compose.yml
 
-# docker-compose.yml的配置可以通过https://docs.docker.com/reference/compose-file查看
 # 对普通镜像而言，最重要的三个配置是 services，networks，volumes
 vi docker-compose.yml
 ```
+
+> `docker-compose.yml`的配置可以通过<a href="https://docs.docker.com/reference/compose-file">官方文档</a>查看
 
 ```yml
 version: "3.1" # 遵循的docker-compose的api版本
