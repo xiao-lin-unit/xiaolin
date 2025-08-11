@@ -79,7 +79,6 @@ docker version
     "https://docker.hpcloud.cloud",
     "https://docker.m.daocloud.io",
     "https://docker.registry.cyou",
-    "https://docker.m.daocloud.io",
     "https://dockercf.jsdelivr.fyi",
     "https://docker-cf.registry.cyou",
     "https://dockertest.jsdelivr.fyi",
@@ -92,7 +91,7 @@ docker version
 
 ![Docker修改仓库源](Docker系列一之安装和基本使用/Docker修改仓库源.png)
 
-> 1. 国内的仓库源有可能失效，如果失效可以自己查找可用仓库源
+> 1. 国内的仓库源大部分(阿里，腾讯，网易，校园镜像)都失效了，我将找到的一个可用的藏到了里面:sunglasses:
 > 2. 使用`docker search`命令结果可能出现`ERROR`，可以使用`docker pull hello-world`命令拉取一个简单镜像尝试，可以拉取成功即可
 
 #### 重新运行
