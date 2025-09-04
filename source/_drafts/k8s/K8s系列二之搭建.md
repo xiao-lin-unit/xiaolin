@@ -449,31 +449,31 @@ root = '/var/lib/containerd'
    
    
 ```bash
-   sudo mkdir -p /etc/containerd/certs.d
+sudo mkdir -p /etc/containerd/certs.d
 sudo mkdir -p /etc/containerd/certs.d/docker.io
-   sudo mkdir -p /etc/containerd/certs.d/_default
+sudo mkdir -p /etc/containerd/certs.d/_default
    
-   sudo touch /etc/containerd/certs.d/docker.io/hosts.toml
-   sudo touch /etc/containerd/certs.d/_default/hosts.toml
+sudo touch /etc/containerd/certs.d/docker.io/hosts.toml
+sudo touch /etc/containerd/certs.d/_default/hosts.toml
 ```
 
    ```bash
-   sudo vi /etc/containerd/certs.d/docker.io/hosts.toml
+sudo vi /etc/containerd/certs.d/docker.io/hosts.toml
 server = "https://registry-1.docker.io"
    
-   [host."https://m.daocloud.io/docker.io"]
-     capabilities = ["pull", "resolve"]
+[host."https://m.daocloud.io/docker.io"]
+  capabilities = ["pull", "resolve"]
      
      
-   sudo vi /etc/containerd/certs.d/_default/host.toml
+sudo vi /etc/containerd/certs.d/_default/host.toml
    
-   server = "https://registry-1.docker.io"
+server = "https://registry-1.docker.io"
    
-   [host."http://192.168.31.250:5000"]
-     capabilities = ["pull", "resolve", "push"]
-     skip_verify = true
-   [host."https://docker.m.daocloud.io"]
-     capabilities = ["pull", "resolve"]
+[host."http://192.168.31.250:5000"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
+[host."https://docker.m.daocloud.io"]
+  capabilities = ["pull", "resolve"]
    ```
 
    ![containerd配置目录结构](K8s系列二之搭建/containerd配置目录结构.png)
@@ -613,4 +613,6 @@ sudo service kubelet restart
 docker.m.dao.cloud.io
 https://mirrors.tuna.tsinghua.edu.cn/
 ```
+
+<span style="color: red">非常抱歉, 我到这里卡住了. 因为pause:3.10这个破玩意儿无法安装, 原因是因为魔法, 国内的魔法地址要么不能用了, 要么没有这个破玩意儿. 不要慌, 我正在积极寻找</span>
 

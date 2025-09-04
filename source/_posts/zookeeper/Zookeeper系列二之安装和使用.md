@@ -293,7 +293,15 @@ public void lock() {
    server.3={zk3.ip}:{zk3.connect_port}:{zk3.port}
    ```
 
-   
+3. 将所有`Zookeeper`服务启动
+
+#### 集群角色
+
+集群中的三种角色:
+
+- `Leader`领导者: 处理事务请求; 集群内部个服务器的调度者
+- `Follower`跟随者: 处理非事务请求, 并转发事务请求给`Leader`; 参与`Leader`选举投票
+- `Observer`观察者: 处理非事务请求, 并转发事务请求给`Leader`
 
 
 
