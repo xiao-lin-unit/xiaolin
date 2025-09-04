@@ -614,5 +614,5 @@ docker.m.dao.cloud.io
 https://mirrors.tuna.tsinghua.edu.cn/
 ```
 
-<span style="color: red">非常抱歉, 我到这里卡住了. 因为pause:3.10这个破玩意儿无法安装, 原因是因为魔法, 国内的魔法地址要么不能用了, 要么没有这个破玩意儿. 不要慌, 我正在积极寻找</span>
+<span style="color: red">非常抱歉, 我到这里卡住了. 因为pause:3.10这个破玩意儿无法安装, 原因是魔法, 国内的魔法地址要么不能用了, 要么没有这个破玩意儿. 不要慌, 我正在积极寻找</span>
 
