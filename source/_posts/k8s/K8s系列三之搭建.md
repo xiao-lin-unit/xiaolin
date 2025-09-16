@@ -1,7 +1,7 @@
 ---
 title: K8s系列(三)---搭建
-top: 1
-cover: 1
+top: 2
+cover: 0
 date: 2025-08-14 16:44:19
 tags:
  - k8s
@@ -66,7 +66,7 @@ sudo chmod 644 /etc/sysctl.conf
 sudo kubeadm init --image-repository registry.aliyuncs.com/google_containers --apiserver-advertise-address=${k8s_master_ip} --kubernetes-version v1.32.7 --service-cidr=10.96.0.0/12 --pod-network-cidr=10.244.0.0/16
 
 # 例如
-# sudo kubeadm init --image-repository registry.aliyuncs.com/google_containers --apiserver-advertise-address=172.27.225.160  --kubernetes-version v1.32.7 --service-cidr=10.96.0.0/12 --pod-network-cidr=10.244.0.0/16
+# sudo kubeadm init --image-repository registry.aliyuncs.com/google_containers --apiserver-advertise-address=192.168.31.101  --kubernetes-version v1.32.7 --service-cidr=10.96.0.0/12 --pod-network-cidr=10.244.0.0/16
 ```
 
 > 国内在初始化时指定一下镜像源, 否则会无法拉取镜像而导致失败
@@ -85,15 +85,23 @@ export KUBECONFIG=/etc/kubernetes/admin.conf
 
 推荐使用普通用户
 
+重置集群
+
+```bash
+sudo kubeadm reset
+```
+
+需要再每个节点都执行
+
 ### 加入集群`Kubernets Node`
 
 1. 使用以下命令加入集群
 
     ```bash
     sudo kubeadm join {k8s_master_ip}:6443 --token {k8s_master_token} --discovery-token-ca-cert-hash sha256:{k8s_maste_hash}
-
-    # 例如 sudo kubeadm join 172.27.225.160:6443 --token be3ggz.ecbzk587k6j295pj \
-            --discovery-token-ca-cert-hash sha256:69b9c214920723f8050fb64a24a84ad3dbbcd5d8a419f89e76323c2812c8833c
+    
+    # 例如 sudo kubeadm join 192.168.31.101:6443 --token 00a8mb.nvp93xb16nozfm6i \
+            --discovery-token-ca-cert-hash sha256:0c7361e4163d98a9591fea80b62a1c1d11c6e71f981c8a06262bf1f096bfba7d
     ```
 
     如果初始化时的`token`清空了, 可以在`master`服务器通过以下命令查看
@@ -120,6 +128,8 @@ export KUBECONFIG=/etc/kubernetes/admin.conf
     kubelet get nodes
     ```
 
+    ![k8s集群节点信息](K8s系列三之搭建/k8s集群节点信息.png)
+
     > 注意: 
     >
     > 1. 查看节点的操作要在`master`节点上操作
@@ -133,7 +143,8 @@ export KUBECONFIG=/etc/kubernetes/admin.conf
    # scp root@k8s-master:/etc/kubernetes/admin.conf ~/.kube/config
    # k8s-master 是主机名, 需要配置hosts, 如果没有配置则需要改为IP
    # ~/.kube/config是基于普通用户的, root用户方式与master节点一致
-   chmod 600 ~/.kube/config
+   # scp root@192.168.31.101:/etc/kubernetes/admin.conf ~/.kube/config
+   sudo chown $(id -u):$(id -g) $HOME/.kube/config
    ```
 
 ### 部署跨服务器的`CNI`网络插件
@@ -151,8 +162,12 @@ sudo wget https://raw.githubusercontent.com/flannel-io/flannel/v0.27.1/Documenta
 
 sudo wget https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
+# 下面一行命令我每次关机重启后都需要重新执行一次, 可以做成自启配置
+sudo modprobe br_netfilter
+
 # 安装完Flannel后执行操作
 # 删除历史应用数据(如果有)
+# 此处的删除和应用flannel实际上是删除和创建集群中的flannel资源, 只需要在一个节点上执行即可
 kubectl delete -f /usr/local/src/kube-flannel.yml --ignore-not-found
 kubectl apply -f /usr/local/src/kube-flannel.yml
 # 如果从节点出现了错误, 连接到本地8080, 则可能是没有将master节点配置复制到node节点
@@ -190,6 +205,7 @@ kubectl get pods -n kube-flannel
 
 - `kube-system`中容器正常运行, 并且`proxy`容器数量与节点数量一致
 - `kube-flannel`中容器正常运行, 并且`ds`容器数量与节点数量一致
+- 使用`ip addr`命令, 每个节点都出现了`flannel.1`这一项
 
 [coredns一直处于ContainerCreating状态](#问题一)
 
@@ -328,7 +344,7 @@ kubectl get all -n kube-flannel
       sudo netstat -tulpn | grep 8472  # 找到占用端口的进程并停止
       ```
 
-      若无法挺尸冲突进程或者该端口确实需要被占用, 则修改`Flannel`端口, 编辑`ConfigMap`
+      若无法停止冲突进程或者该端口确实需要被占用, 则修改`Flannel`端口, 编辑`ConfigMap`
 
       ```bash
       kubectl edit configmap -n kube-flannel
@@ -374,7 +390,7 @@ kubectl get all -n kube-flannel
         
         # 2. 持久化配置（重启后自动生效）
         # 创建/编辑内核参数配置文件
-        sudo cat > /etc/sysctl.d/k8s.conf <<EOF
+        sudo cat > /etc/sysctl.conf <<EOF
         net.bridge.bridge-nf-call-iptables  = 1
         net.bridge.bridge-nf-call-ip6tables = 1
         net.ipv4.ip_forward                 = 1
