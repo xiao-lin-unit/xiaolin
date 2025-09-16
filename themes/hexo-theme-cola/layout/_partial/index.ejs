@@ -2,7 +2,7 @@
 
 <%
   const time = new Date().getMilliseconds();
-  function cover(post) {
+  const postCover = (post) => {
       const url = post.cover;
       let cover = post.cover || theme.cover.default;
       if (url === null || url === undefined || url === '') {
@@ -15,52 +15,60 @@
       }
       post.cover = cover + "?time=" + time;
   }
+
+  const postSort = (a, b) => {
+      debugger;
+      // 先将两个文章的分类数组排序
+      let aCate = a.categories.data.map(i => i.name).sort((c1, c2) => c1 > c2 ? 1 : -1);
+      let bCate = b.categories.data.map(i => i.name).sort((c1, c2) => c1 > c2 ? 1 : -1);
+      // 先根据分类排序
+      if (aCate && bCate) {
+          // 判断分类数组长度是否相同
+          if (aCate.length !== bCate.length) {
+              // 不同直接返回结果
+              return aCate.length - bCate.length
+          }
+          // 相同, 获取两个数组的长度
+          const length = aCate.length;
+          // 根据长度遍历两个数组
+          for (let i = 0; i < length; i++) {
+              // 判断当前元素是否相同
+              if (aCate[i] !== bCate[i]) {
+                  let aCh = aCate[i];
+                  let bCh = bCate[i];
+                  return aCh > bCh ? 1 : -1;
+              }
+          }
+      } else if (a.categories) {
+          return 1
+      } else {
+          return -1
+      }
+      // 如果分类无法排序, 则根据其他内容排序
+      if(a.top !== null && a.top !== undefined && a.top !== '' && b.top !== null && b.top !== undefined && b.top !== '') { // 两篇文章top都有定义
+          if(a.top == b.top) return a.date - b.date; // 若top值一样则按照文章日期降序排
+          else return (a.top) - (b.top); // 否则按照top值降序排
+      }
+      else if(a.top && !b.top) { // 以下是只有一篇文章top有定义，那么将有top的排在前面（这里用异或操作居然不行233）
+          return -1;
+      }
+      else if(!a.top && b.top) {
+          return 1;
+      }
+      else return a.date - b.date; // 都没定义按照文章日期降序排
+  }
+
+  const postFilter = (post) => {
+    return post.title;
+  }
+
+
   const leftPosts = [], rightPosts = []
   page.per_page = 2
-  const posts = page.posts;
-  posts.data.sort((a, b) => {
-    debugger;
-    // 先将两个文章的分类数组排序
-    let aCate = a.categories.data.map(i => i.name).sort((c1, c2) => c1 > c2 ? 1 : -1);
-    let bCate = b.categories.data.map(i => i.name).sort((c1, c2) => c1 > c2 ? 1 : -1);
-    // 先根据分类排序
-    if (aCate && bCate) {
-      // 判断分类数组长度是否相同
-      if (aCate.length !== bCate.length) {
-        // 不同直接返回结果
-        return aCate.length - bCate.length
-      }
-      // 相同, 获取两个数组的长度
-      const length = aCate.length;
-      // 根据长度遍历两个数组
-      for (let i = 0; i < length; i++) {
-        // 判断当前元素是否相同
-        if (aCate[i] !== bCate[i]) {
-          let aCh = aCate[i];
-          let bCh = bCate[i];
-          return aCh > bCh ? 1 : -1;
-        }
-      }
-    } else if (a.categories) {
-      return 1
-    } else {
-      return -1
-    }
-    // 如果分类无法排序, 则根据其他内容排序
-    if(a.top && b.top) { // 两篇文章top都有定义
-      if(a.top == b.top) return a.date - b.date; // 若top值一样则按照文章日期降序排
-      else return a.top - b.top; // 否则按照top值降序排
-    }
-    else if(a.top && !b.top) { // 以下是只有一篇文章top有定义，那么将有top的排在前面（这里用异或操作居然不行233）
-      return -1;
-    }
-    else if(!a.top && b.top) {
-      return 1;
-    }
-    else return a.date - b.date; // 都没定义按照文章日期降序排
-  });
+  const posts = page.posts.filter(postFilter);
+  posts.data.sort(postSort);
   posts.each(function (post, i) {
-      cover(post)
+      postCover(post)
       if (i % 2 === 0) {
           leftPosts.push(post)
       } else {
