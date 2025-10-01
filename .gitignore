@@ -5,3 +5,4 @@ db.json
 *.git
 package-lock.json
 node_modules
+pnpm-lock.yaml
