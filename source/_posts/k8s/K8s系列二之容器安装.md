@@ -452,30 +452,36 @@ imports = []
 
 ```bash
 sudo mkdir -p /etc/containerd/certs.d
-sudo mkdir -p /etc/containerd/certs.d/docker.io
 sudo mkdir -p /etc/containerd/certs.d/_default
+sudo mkdir -p /etc/containerd/certs.d/docker.io
+sudo mkdir -p /etc/containerd/certs.d/registry.k8s.io
 
-sudo touch /etc/containerd/certs.d/docker.io/hosts.toml
 sudo touch /etc/containerd/certs.d/_default/hosts.toml
+sudo touch /etc/containerd/certs.d/docker.io/hosts.toml
+sudo touch /etc/containerd/certs.d/registry.k8s.io/hosts.toml
 ```
 
 ```bash
 sudo vi /etc/containerd/certs.d/docker.io/hosts.toml
-server = "https://registry-1.docker.io"
 
-[host."https://m.daocloud.io/docker.io"]
+server = "https://docker.io"
+[host."https://docker.mirrors.aliyuncs.com"]
   capabilities = ["pull", "resolve"]
+  priority = 100
+[host."https://docker.m.daocloud.io"]
+  capabilities = ["pull", "resolve"]
+  priority = 10
+[host."https://registry-1.docker.io"]
+  capabilities = ["pull", "resolve"]
+  priority = 1000
 ```
 
 ```toml
-sudo vi /etc/containerd/certs.d/_default/host.toml
+sudo vi /etc/containerd/certs.d/registry.k8s.io/host.toml
 
-server = "https://registry-1.docker.io"
+server = "https://registry.k8s.io"
 
-[host."http://192.168.31.250:5000"]
-  capabilities = ["pull", "resolve", "push"]
-  skip_verify = true
-[host."https://docker.m.daocloud.io"]
+[host."https://k8s.m.daocloud.io"]
   capabilities = ["pull", "resolve"]
 ```
 

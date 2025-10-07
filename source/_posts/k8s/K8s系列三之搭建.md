@@ -66,7 +66,7 @@ sudo chmod 644 /etc/sysctl.conf
 sudo kubeadm init --image-repository registry.aliyuncs.com/google_containers --apiserver-advertise-address=${k8s_master_ip} --kubernetes-version v1.32.7 --service-cidr=10.96.0.0/12 --pod-network-cidr=10.244.0.0/16
 
 # 例如
-# sudo kubeadm init --image-repository registry.aliyuncs.com/google_containers --apiserver-advertise-address=192.168.31.101  --kubernetes-version v1.32.7 --service-cidr=10.96.0.0/12 --pod-network-cidr=10.244.0.0/16
+# sudo kubeadm init --image-repository registry.aliyuncs.com/google_containers --apiserver-advertise-address=192.168.5.101  --kubernetes-version v1.32.7 --service-cidr=10.96.0.0/12 --pod-network-cidr=10.244.0.0/16
 ```
 
 > 国内在初始化时指定一下镜像源, 否则会无法拉取镜像而导致失败
@@ -100,47 +100,46 @@ sudo kubeadm reset
     ```bash
     sudo kubeadm join {k8s_master_ip}:6443 --token {k8s_master_token} --discovery-token-ca-cert-hash sha256:{k8s_maste_hash}
     
-    # 例如 sudo kubeadm join 192.168.31.101:6443 --token 00a8mb.nvp93xb16nozfm6i \
-            --discovery-token-ca-cert-hash sha256:0c7361e4163d98a9591fea80b62a1c1d11c6e71f981c8a06262bf1f096bfba7d
+    # 例如 sudo kubeadm join 192.168.5.101:6443 --token c1qyym.5srgs3r3i94wepqh --discovery-token-ca-cert-hash  sha256:472d5b07da9edd6bc1ecf93d9b8f0ed8e9888eba504e2620ab94d253c0fc9bc0
     ```
-
-    如果初始化时的`token`清空了, 可以在`master`服务器通过以下命令查看
-
-    ```bash
+    
+如果初始化时的`token`清空了, 可以在`master`服务器通过以下命令查看
+    
+```bash
     kubeadm token list
     ```
-
-    如果`token`已经过期, 可以通过以下命令重新申请
-
-    ```
+    
+如果`token`已经过期, 可以通过以下命令重新申请
+    
+```
     kubeadm token create
     ```
-
-    如果初始化时的master_hash清空了, 可以在master服务器通过以下命令查看
-
-    ```
+    
+如果初始化时的master_hash清空了, 可以在master服务器通过以下命令查看
+    
+```
     openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
     ```
-
-    在执行命令成功后可以通过以下命令查看是否已经加入集群
-
-    ```
+    
+在执行命令成功后可以通过以下命令查看是否已经加入集群
+    
+```
     kubelet get nodes
     ```
-
-    ![k8s集群节点信息](K8s系列三之搭建/k8s集群节点信息.png)
-
-    > 注意: 
+    
+![k8s集群节点信息](K8s系列三之搭建/k8s集群节点信息.png)
+    
+> 注意: 
     >
     > 1. 查看节点的操作要在`master`节点上操作
     > 2. 如果节点是`NotReady`状态, 可能是没有安装跨服务器的网络插件
-
+    
 2. 将`master`节点配置复制到`node`节点
 
    ```bash
    # 或者想其他方式将文件复制过去
    scp root@<master-ip>:/etc/kubernetes/admin.conf ~/.kube/config
-   # scp root@k8s-master:/etc/kubernetes/admin.conf ~/.kube/config
+   # scp root@k8s-master:~/.kube/config ~/.kube/config
    # k8s-master 是主机名, 需要配置hosts, 如果没有配置则需要改为IP
    # ~/.kube/config是基于普通用户的, root用户方式与master节点一致
    # scp root@192.168.31.101:/etc/kubernetes/admin.conf ~/.kube/config
