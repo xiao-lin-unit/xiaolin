@@ -407,9 +407,32 @@ spec:
 
 ```
 
+查看
 
+```shell
+kubectl top -n {namespace}
+```
 
+如果出现错误
 
+```error
+error: Metrics AI not available
+```
+
+需要安装插件
+
+```shell
+sudo wget https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml -o /usr/local/src/metrics-server-components.yaml
+
+kubectl apply -f /usr/local/src/metrics-server-components.yaml
+```
+
+![hpa结果](K8s系列六之资源补充/hpa结果.png)
+
+#### `Service&Endpoint`
+
+- `Service`: 是一个抽象访问层, 为一组具有相同功能的`Pod`提供固定访问地址, 并实现负载均衡. `Service`结合`k8s`的`DNS`服务可以实现服务发现, 可以将`Service`解析为`ClusterIP`, 在集群内部的`Pod`可以通过`Service`名称直接访问, 无需硬编码. 除此之外, `Service`还可以实现流量控制
+- `Endpoint`: `k8s`自动维护的资源对象, 用于记录`Service`对应的后端`Pod`的实际`IP`和端口, 支持动态更新. `Service`与`Pod`的通信都是通过`Endpoint`中的地址列表转发请求
 
 
 

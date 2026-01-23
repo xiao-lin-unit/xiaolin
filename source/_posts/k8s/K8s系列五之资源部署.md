@@ -110,7 +110,7 @@ categories:
           targetRevision: master # 分支
           path: manifests/overlays/dev/nginx # 仓库中配置文件的路径
         destination:
-          server: https://kubernetes.default.svc # 如果是本地集群, 固定写改地址, 跨集群管理则需要写 https://ip:port
+          server: https://kubernetes.default.svc # 如果是本地集群, 固定写该地址, 跨集群管理则需要写 https://ip:port
           namespace: dev # 同步到k8s的dev命名空间
         syncPolicy:
           automated:
@@ -888,7 +888,7 @@ kubectl api-resources
      ports:
        - port: 3306
          targetPort: 3306
-     clusterIP: None  # Headless Service，便于从库通过域名访问
+     clusterIP: None  
    ```
 
 6. 创建主从复制初始化脚本
@@ -1130,7 +1130,7 @@ kubectl api-resources
          type: LoadBalancer
        ```
 
-       如上添加了一个`mysql-master`的端口配置, `targetPort`对用上一步中`ConfigMap`中的端口
+       如上添加了一个`mysql-master`的端口配置, `targetPort`对应上一步中`ConfigMap`中的端口
 
        由此可以看出`Nginx Ingress Controller`方式访问`mysql` , 其本质还是使用`Service`方式
 
@@ -1391,7 +1391,7 @@ kubectl api-resources
 
 2. 第一个方向非常容易, 登录到对应容器下, 查看容器中对应目录的是否有文件, 文件中内容是否正常(这个我是没有的, 解决的非常快:happy:)
 
-3. 第二个方向比较麻烦, 因为容器内的执行权限不容易处理, 我通过修改命令(`yaml`配置中的`command`)和参数(`yaml`配置中的`args`), 将容器中该目录中的文件增加执行权限, 然后按照原容器启动方式启动(这个花了点时间的:sweat_smile:), 这个解决办法我不确定能不能行, 然后有从网上找了一下`mysql`容器启动后执行脚本的文章, 我没有尝试按照他们的配置运行容器, 但是从他们的文章中给到我的信息时, 这样添加的脚本确实可以执行, 所以应该不是权限问题
+3. 第二个方向比较麻烦, 因为容器内的执行权限不容易处理, 我通过修改命令(`yaml`配置中的`command`)和参数(`yaml`配置中的`args`), 将容器中该目录中的文件增加执行权限, 然后按照原容器启动方式启动(这个花了点时间的:sweat_smile:), 这个解决办法我不确定能不能行, 然后又从网上找了一下`mysql`容器启动后执行脚本的文章, 我没有尝试按照他们的配置运行容器, 但是从他们的文章中给到我的信息时, 这样添加的脚本确实可以执行, 所以应该不是权限问题
 
 4. 第三个方向就比较重磅了, 花费的时间几乎都在这一方向上
 
@@ -1461,7 +1461,7 @@ kubectl api-resources
 
      现在应该能看出区别了挂载是的每一项的配置中`mountPath`指向的是容器内的目录, `subPath`指向的是你数据卷中根目录下的目录, 如果没有`subPath`配置, 则指向的是数据卷的根目录.
 
-     前文中我们提到, 豆包给出的提示是`/var/lib/mysql`这个目录为空, 那么如果你确保你挂载的数据卷的根目录为空, 则使用第一种方式挂载即可. 但实际上`mysql`镜像的判断是是否有`msyql`这一级目录, 但使用第一种方式时, 你的`/var/lib/mysql`这个目录下是空的, 但是`/var/lib/mysql`这一级目录是存在的, 所以会跳过脚本执行操作 
+     前文中我们提到, 豆包给出的提示是`/var/lib/mysql`这个目录为空, 那么如果你确保你挂载的数据卷的根目录为空, 则使用第一种方式挂载即可. 但实际上`mysql`镜像的判断是是否有`msyql`这一级目录, 当使用第一种方式时, 你的`/var/lib/mysql`这个目录下是空的, 但是`/var/lib/mysql`这一级目录是存在的, 所以会跳过脚本执行操作 
 
      到此解决
 
@@ -1478,7 +1478,7 @@ kubectl api-resources
 
 详细讲一下第二个问题:
 
-我起初想通过添加`args`解决, 但是`args`的添加内容在执行时, 不会识别`$HOSTNAME`这样的内容, 因为它不是使用`/bin/bash`执行的, 所以才在脚本中做修改. 看过问题三种提到的`mysql`服务的<a href="docker-entrypoint.sh">启动文件</a>应该了解了, `mysql`容器在首次启动时是启动两次的, 第一次是临时启动, 然后执行你添加的脚本, 执行完后停止然后进行第二次启动. 现在要解决两个问题: 临时启动时, 会执行你添加的脚步, 但此时启动的`mysql`服务的`server-id`为1, 应当将其改为目标值, 与其他库不一致, 这样才能正常执行同步操作; 第二次启动时`server-id`也应当修改, 但此时不再执行你添加的脚本, 所以需要想办法添加到`mysql`可读取的配置文件中, 所以
+我起初想通过添加`args`解决, 但是`args`的添加内容在执行时, 不会识别`$HOSTNAME`这样的内容, 因为它不是使用`/bin/bash`执行的, 所以才在脚本中做修改. 看过问题三中提到的`mysql`服务的<a href="docker-entrypoint.sh">启动文件</a>应该了解了, `mysql`容器在首次启动时是启动两次的, 第一次是临时启动, 然后执行你添加的脚本, 执行完后停止然后进行第二次启动. 现在要解决两个问题: 临时启动时, 会执行你添加的脚步, 但此时启动的`mysql`服务的`server-id`为1, 应当将其改为目标值, 与其他库不一致, 这样才能正常执行同步操作; 第二次启动时`server-id`也应当修改, 但此时不再执行你添加的脚本, 所以需要想办法添加到`mysql`可读取的配置文件中, 所以
 
 ```bash
 mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SET GLOBAL server_id=$SERVER_ID\G"

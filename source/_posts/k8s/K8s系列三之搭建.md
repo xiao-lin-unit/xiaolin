@@ -91,7 +91,7 @@ export KUBECONFIG=/etc/kubernetes/admin.conf
 sudo kubeadm reset
 ```
 
-需要再每个节点都执行
+需要在每个节点都执行
 
 ### 加入集群`Kubernets Node`
 
@@ -230,9 +230,9 @@ kubectl logs {pod_name} -n kube-flannel -c kube-flannel
 
 1. `CNI`插件未初始化, `Flannel`未正常部署. 本人前文中已经正常部署, 所以此处的解决方案参考`Flannel`插件部署
 
-2. `CoreDNS`镜像拉取失败. 这个请自己的方式拉取合适的镜像
+2. `CoreDNS`镜像拉取失败. 这个请用自己的方式拉取合适的镜像
 
-3. 找不到`subnet.env`文件. 这个冷藏室`Flannel`未生成子网配置文件, 网络插件未就绪导致的,参考[`Flannel`部署资源失败](#问题二)
+3. 找不到`subnet.env`文件. 这个问题是`Flannel`未生成子网配置文件, 网络插件未就绪导致的,参考[`Flannel`部署资源失败](#问题二)
 
    通过命令查看`flannel`部署资源是否正常运行
 
@@ -275,7 +275,7 @@ kubectl get all -n kube-flannel
 
    - 无错误输出但资源仍未创建
 
-     部署文件内容损坏或格式错误, 下载最新部署文件, 如果原网址连接超时可以用一下网址尝试
+     部署文件内容损坏或格式错误, 下载最新部署文件, 如果原网址连接超时可以用以下网址尝试
 
      ```bash
      wget https://ghproxy.com/https://raw.githubusercontent.com/flannel-io/flannel/v0.22.2/Documentation/kube-flannel.yml
@@ -326,7 +326,7 @@ kubectl get all -n kube-flannel
           "Network": "10.244.0.0/16",  # 与 kubeadm init 时的 --pod-network-cidr 一致
           "Backend": {
             "Type": "vxlan",
-            "KubeAPIEndpoint": "https://172.29.160.142:6443",  # 控制平面 API 地址
+            "KubeAPIEndpoint": "https://192.168.5.101:6443",  # 控制平面 API 地址
             "KubeAPIToken": "<你的 kube-proxy token>"  # 可留空，Flannel 会自动获取
           }
         }
